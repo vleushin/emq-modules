@@ -30,11 +30,11 @@ load(Env) ->
     emqttd:hook('client.connected',    fun ?MODULE:on_client_connected/3, [Env]),
     emqttd:hook('client.disconnected', fun ?MODULE:on_client_disconnected/3, [Env]).
 
-on_client_connected(ConnAck, Client = #mqtt_client{client_id     = ClientId,
-                                                   username      = Username,
-                                                   peername      = {IpAddr, _},
-                                                   clean_session = Clean,
-                                                   proto_ver     = ProtoVer}, Env) ->
+on_client_connected(ConnAck, Client = #mqtt_client{client_id  = ClientId,
+                                                   username   = Username,
+                                                   peername   = {IpAddr, _},
+                                                   clean_sess = Clean,
+                                                   proto_ver  = ProtoVer}, Env) ->
     Payload = mochijson2:encode([{clientid, ClientId},
                                  {username, Username},
                                  {ipaddress, list_to_binary(emqttd_net:ntoa(IpAddr))},

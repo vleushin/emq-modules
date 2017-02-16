@@ -37,7 +37,7 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id  = ClientId,
                                                    proto_ver  = ProtoVer}, Env) ->
     Payload = mochijson2:encode([{clientid, ClientId},
                                  {username, Username},
-                                 {ipaddress, list_to_binary(emqttd_net:ntoa(IpAddr))},
+                                 {ipaddress, iolist_to_binary(emqttd_net:ntoa(IpAddr))},
                                  {clean_sess, CleanSess},
                                  {protocol, ProtoVer},
                                  {connack, ConnAck},

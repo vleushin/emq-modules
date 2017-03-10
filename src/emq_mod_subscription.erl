@@ -12,7 +12,7 @@
 
 -include_lib("emqttd/include/emqttd_protocol.hrl").
 
--export([load/1, on_client_connected/3, unload/0]).
+-export([load/1, on_client_connected/3, unload/1]).
 
 -define(TAB, ?MODULE).
 
@@ -35,7 +35,7 @@ on_client_connected(?CONNACK_ACCEPT, Client = #mqtt_client{client_id  = ClientId
 on_client_connected(_ConnAck, _Client, _State) ->
     ok.
 
-unload() ->
+unload(_) ->
     emqttd:unhook('client.connected', fun ?MODULE:on_client_connected/3).
 
 %%--------------------------------------------------------------------

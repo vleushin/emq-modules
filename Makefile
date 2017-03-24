@@ -3,7 +3,7 @@ PROJECT_DESCRIPTION = EMQ Modules
 PROJECT_VERSION = 2.1.0
 
 BUILD_DEPS = emqttd cuttlefish
-dep_emqttd = git https://github.com/emqtt/emqttd
+dep_emqttd = git https://github.com/emqtt/emqttd develop
 dep_cuttlefish = git https://github.com/emqtt/cuttlefish
 
 NO_AUTOPATCH = cuttlefish

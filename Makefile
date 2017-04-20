@@ -1,6 +1,6 @@
 PROJECT = emq_modules
 PROJECT_DESCRIPTION = EMQ Modules
-PROJECT_VERSION = 2.1.1
+PROJECT_VERSION = 2.1.2
 
 BUILD_DEPS = emqttd cuttlefish
 dep_emqttd = git https://github.com/emqtt/emqttd emq20

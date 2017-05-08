@@ -8,3 +8,11 @@ ebin
 rel/example_project
 .concrete/DEV_MODE
 .rebar
+.erlang.mk/
+cover/
+ct.coverdata
+data/
+emq_modules.d
+eunit.coverdata
+logs/
+test/ct.cover.spec

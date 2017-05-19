@@ -10,6 +10,15 @@ NO_AUTOPATCH = cuttlefish
 
 ERLC_OPTS += +'{parse_transform, lager_transform}'
 
+TEST_DEPS = emqttc
+dep_emqttc = git https://github.com/emqtt/emqttc.git master
+
+TEST_ERLC_OPTS += +debug_info
+TEST_ERLC_OPTS += +'{parse_transform, lager_transform}'
+
+COVER = true
+
+
 include erlang.mk
 
 app.config::

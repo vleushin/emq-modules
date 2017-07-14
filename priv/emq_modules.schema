@@ -12,17 +12,17 @@
 {validators, ["range:0-2"]}
 ]}.
 
-{mapping, "module.presence.kafka_bootstrap_endpoints", "emq_mod_presence.kafka_bootstrap_endpoints", [
+{mapping, "module.presence.kafka_bootstrap_endpoints", "emq_modules.modules", [
 {default, "localhost:9092"},
 {datatype, string}
 ]}.
 
-{mapping, "module.presence.kafka_presence_topic", "emq_mod_presence.kafka_presence_topic", [
+{mapping, "module.presence.kafka_presence_topic", "emq_modules.modules", [
 {default, "mqtt-presence-raw"},
 {datatype, string}
 ]}.
 
-{mapping, "module.presence.kafka_presence_topic_partition_count", "emq_mod_presence.kafka_presence_topic_partition_count", [
+{mapping, "module.presence.kafka_presence_topic_partition_count", "emq_modules.modules", [
 {default, 1},
 {datatype, integer},
 {validators, ["range:0-32"]}

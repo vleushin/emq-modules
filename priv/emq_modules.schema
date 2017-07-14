@@ -69,17 +69,21 @@ end, Rules)
 end,
 lists:append([
 case cuttlefish:conf_get("module.presence", Conf) of %% Presence
-true  -> [{emq_mod_presence, [{qos, cuttlefish:conf_get("module.presence.qos", Conf, 1)}]}];
+true -> [{emq_mod_presence, [
+{qos, cuttlefish:conf_get("module.presence.qos", Conf, 1)},
+{kafka_bootstrap_endpoints, cuttlefish:conf_get("module.presence.kafka_bootstrap_endpoints", Conf)},
+{kafka_presence_topic, cuttlefish:conf_get("module.presence.kafka_presence_topic", Conf)},
+{kafka_presence_topic_partition_count, cuttlefish:conf_get("module.presence.kafka_presence_topic_partition_count", Conf)}
+]}];
 false -> []
 end,
 case cuttlefish:conf_get("module.subscription", Conf) of %% Subscription
-true  -> [{emq_mod_subscription, Subscriptions()}];
+true -> [{emq_mod_subscription, Subscriptions()}];
 false -> []
 end,
 case cuttlefish:conf_get("module.rewrite", Conf) of %% Rewrite
-true  -> [{emq_mod_rewrite, Rewrites()}];
+true -> [{emq_mod_rewrite, Rewrites()}];
 false -> []
 end
 ])
 end}.
-

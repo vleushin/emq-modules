@@ -1,43 +1,57 @@
--module(emq_modules_SUITE).
+%%--------------------------------------------------------------------
+%% Copyright (c) 2013-2017 EMQ Enterprise, Inc. (http://emqtt.io)
+%%
+%% Licensed under the Apache License, Version 2.0 (the "License");
+%% you may not use this file except in compliance with the License.
+%% You may obtain a copy of the License at
+%%
+%%     http://www.apache.org/licenses/LICENSE-2.0
+%%
+%% Unless required by applicable law or agreed to in writing, software
+%% distributed under the License is distributed on an "AS IS" BASIS,
+%% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+%% See the License for the specific language governing permissions and
+%% limitations under the License.
+%%--------------------------------------------------------------------
+
+-module(emqx_modules_SUITE).
 
 -compile(export_all).
 
--include_lib("common_test/include/ct.hrl").
-
 -include_lib("eunit/include/eunit.hrl").
+
+-include_lib("common_test/include/ct.hrl").
 
 -define(HOOKS, ['client.connected', 'client.disconnected', 'client.subscribe', 'client.unsubscribe', 'message.publish']).
 
 -define(REWRITE, [{rewrite, <<"x/#">>, <<"^x/y/(.+)$">>, <<"z/y/$1">>}]).
 
-
 all() ->
-    [emq_modules_restart,
-     {group, emq_mod_subscription},
-     {group, emq_mod_rewrite},
-     {group, emq_mod_presence}].
+    [emqx_modules_restart,
+     {group, emqx_mod_subscription},
+     {group, emqx_mod_rewrite},
+     {group, emqx_mod_presence}].
 
 groups() ->
-    [{emq_mod_subscription, [parallel], [connect]},
-     {emq_mod_rewrite, [sequence], [rewrite_sub, publish]},
-     {emq_mod_presence, [parallel], [presence_msg]}
-    ].
+    [{emqx_mod_subscription, [parallel], [connect]},
+     {emqx_mod_rewrite, [sequence], [rewrite_sub, publish]},
+     {emqx_mod_presence, [parallel], [presence_msg]}].
 
 init_per_suite(Config) ->
     DataDir = proplists:get_value(data_dir, Config),
-    [start_apps(App, DataDir) || App <- [emqttd, emq_modules]],
+    [start_apps(App, DataDir) || App <- [emqx, emqx_modules]],
     Config.
 
 end_per_suite(Config) ->
-    [application:stop(App) || App <- [emq_modules, emqttd]],
+    [application:stop(App) || App <- [emqx_modules, emqx]],
     Config.
 
-emq_modules_restart(_Config) ->
-    application:stop(emq_modules),
-    UnloadLists = [emqttd_hooks:lookup(Hook) || Hook <- ?HOOKS],
+emqx_modules_restart(_Config) ->
+    application:stop(emqx_modules),
+    UnloadLists = [emqx_hooks:lookup(Hook) || Hook <- ?HOOKS],
     ?assert(lists:append(UnloadLists) =:= []),
-    application:start(emq_modules),
-    ReloadLists = [emqttd_hooks:lookup(Hook) || Hook <- ?HOOKS],
+    application:start(emqx_modules),
+    ReloadLists = [emqx_hooks:lookup(Hook) || Hook <- ?HOOKS],
     ?assert(length(lists:append(ReloadLists)) > 0).
 
 connect(_Config)->
@@ -49,15 +63,15 @@ connect(_Config)->
     emqttc:disconnect(C1).
 
 rewrite_sub(_Config) ->
-    emq_mod_rewrite:unload(rewrite),
-    emq_mod_rewrite:load(?REWRITE),
+    emqx_mod_rewrite:unload(rewrite),
+    emqx_mod_rewrite:load(?REWRITE),
     {ok, C1} = emqttc:start_link([{host, "localhost"}, {client_id, <<"c1">>}, {username, <<"u1">>}]),
     timer:sleep(10),
     emqttc:subscribe(C1, <<"x/y/z">>, qos2),
     timer:sleep(10),
     Subs = ets:lookup(mqtt_subscription, <<"c1">>),
     ?assert(lists:member({<<"c1">>, <<"z/y/z">>}, Subs)),
-    emqttd:publish(emqttd_message:make(ct, <<"a/b/c">>, <<"hello">>)),
+    emqx:publish(emqx_message:make(ct, <<"a/b/c">>, <<"hello">>)),
     emqttc:unsubscribe(C1, <<"x/y/z">>),
     timer:sleep(20),
     UnSubs = ets:lookup(mqtt_subscription, <<"c1">>),
@@ -65,17 +79,17 @@ rewrite_sub(_Config) ->
     emqttc:disconnect(C1).
 
 publish(_) ->
-    Msg = emqttd_message:make(ct, <<"test/pubsub">>, <<"hello">>),
-    ok = emqttd:subscribe(<<"test/+">>),
+    Msg = emqx_message:make(ct, <<"test/pubsub">>, <<"hello">>),
+    ok = emqx:subscribe(<<"test/+">>),
     timer:sleep(10),
-    emqttd:publish(Msg),
+    emqx:publish(Msg),
     ?assert(receive {dispatch, <<"test/+">>, Msg} -> true after 5 -> false end).
 
 presence_msg(_) ->
     Self = self(),
     {ok, P1} = emqttc:start_link([{host, "localhost"}, {client_id, <<"p1">>}]),
     timer:sleep(10),
-    ok = emqttd:subscribe(<<"$SYS/brokers/+/clients/c1/+">>, Self),
+    ok = emqx:subscribe(<<"$SYS/brokers/+/clients/c1/+">>, Self),
     timer:sleep(10),
     emqttc:disconnect(P1).
 
@@ -88,3 +102,5 @@ start_apps(App, DataDir) ->
     Vals = proplists:get_value(App, NewConfig),
     [application:set_env(App, Par, Value) || {Par, Value} <- Vals],
     application:ensure_all_started(App).
+
+

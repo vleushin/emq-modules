@@ -12,7 +12,7 @@ rel/example_project
 cover/
 ct.coverdata
 data/
-emq_modules.d
+emqx_modules.d
 eunit.coverdata
 logs/
 test/ct.cover.spec

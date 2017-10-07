@@ -1,6 +1,6 @@
 
-EMQ Modules
-===========
+EMQ X Modules
+=============
 
 Presence Module
 ---------------
@@ -15,7 +15,7 @@ module.presence.qos = 0
 ```
 
 Subscription Module
---------------------
+-------------------
 
 ```
 ## Enable Subscription, Values: on | off
@@ -31,7 +31,7 @@ module.subscription.1.qos = 1
 ```
 
 Rewrite Module
----------------
+--------------
 
 ```
 ## Enable Rewrite, Values: on | off
@@ -51,5 +51,5 @@ Apache License Version 2.0
 Author
 ------
 
-Feng at emqtt.io
+EMQ X-Men Team.
 

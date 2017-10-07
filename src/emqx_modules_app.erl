@@ -14,7 +14,7 @@
 %% limitations under the License.
 %%--------------------------------------------------------------------
 
--module(emq_modules_app).
+-module(emqx_modules_app).
 
 -author("Feng Lee <feng@emqtt.io>").
 
@@ -23,15 +23,16 @@
 -export([start/2, stop/1]).
 
 start(_Type, _Args) ->
-    {ok, Modules} = application:get_env(emq_modules, modules),
     lists:foreach(
       fun({Mod, Env}) ->
         ok = Mod:load(Env),
         io:format("Load ~s module successfully.~n", [Mod])
-      end, Modules),
-    emq_modules_sup:start_link().
+      end, modules()),
+    emqx_modules_sup:start_link().
 
 stop(_State) ->
-    {ok, Modules} = application:get_env(emq_modules, modules),
-    lists:foreach(fun({Mod, Env}) -> Mod:unload(Env) end, Modules).
+    lists:foreach(fun({Mod, Env}) -> Mod:unload(Env) end, modules()).
+
+modules() ->
+    {ok, Modules} = application:get_env(emqx_modules, modules), Modules.
 

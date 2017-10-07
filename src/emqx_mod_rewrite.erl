@@ -14,13 +14,13 @@
 %% limitations under the License.
 %%--------------------------------------------------------------------
 
--module(emq_mod_rewrite).
-
--behaviour(emqttd_gen_mod).
+-module(emqx_mod_rewrite).
 
 -author("Feng Lee <feng@emqtt.io>").
 
--include_lib("emqttd/include/emqttd.hrl").
+-behaviour(emqx_gen_mod).
+
+-include_lib("emqx/include/emqx.hrl").
 
 -export([load/1, unload/1]).
 
@@ -32,9 +32,9 @@
 
 load(Rules0) ->
     Rules = compile(Rules0),
-    emqttd:hook('client.subscribe',  fun ?MODULE:rewrite_subscribe/4, [Rules]),
-    emqttd:hook('client.unsubscribe',fun ?MODULE:rewrite_unsubscribe/4, [Rules]),
-    emqttd:hook('message.publish',   fun ?MODULE:rewrite_publish/2, [Rules]).
+    emqx:hook('client.subscribe',  fun ?MODULE:rewrite_subscribe/4, [Rules]),
+    emqx:hook('client.unsubscribe',fun ?MODULE:rewrite_unsubscribe/4, [Rules]),
+    emqx:hook('message.publish',   fun ?MODULE:rewrite_publish/2, [Rules]).
 
 rewrite_subscribe(_ClientId, _Username, TopicTable, Rules) ->
     lager:info("Rewrite subscribe: ~p", [TopicTable]),
@@ -57,9 +57,9 @@ rewrite_publish(Message=#mqtt_message{topic = Topic}, Rules) ->
     {ok, Message#mqtt_message{topic = RewriteTopic}}.
 
 unload(_) ->
-    emqttd:unhook('client.subscribe',  fun ?MODULE:rewrite_subscribe/4),
-    emqttd:unhook('client.unsubscribe',fun ?MODULE:rewrite_unsubscribe/4),
-    emqttd:unhook('message.publish',   fun ?MODULE:rewrite_publish/2).
+    emqx:unhook('client.subscribe',  fun ?MODULE:rewrite_subscribe/4),
+    emqx:unhook('client.unsubscribe',fun ?MODULE:rewrite_unsubscribe/4),
+    emqx:unhook('message.publish',   fun ?MODULE:rewrite_publish/2).
 
 %%--------------------------------------------------------------------
 %% Internal functions
@@ -69,7 +69,7 @@ match_rule(Topic, []) ->
     Topic;
 
 match_rule(Topic, [{rewrite, Filter, MP, Dest} | Rules]) ->
-    case emqttd_topic:match(Topic, Filter) of
+    case emqx_topic:match(Topic, Filter) of
         true  -> match_regx(Topic, MP, Dest);
         false -> match_rule(Topic, Rules)
     end.

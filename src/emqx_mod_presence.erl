@@ -14,21 +14,21 @@
 %% limitations under the License.
 %%--------------------------------------------------------------------
 
--module(emq_mod_presence).
-
--behaviour(emqttd_gen_mod).
+-module(emqx_mod_presence).
 
 -author("Feng Lee <feng@emqtt.io>").
 
--include_lib("emqttd/include/emqttd.hrl").
+-behaviour(emqx_gen_mod).
+
+-include_lib("emqx/include/emqx.hrl").
 
 -export([load/1, unload/1]).
 
 -export([on_client_connected/3, on_client_disconnected/3]).
 
 load(Env) ->
-    emqttd:hook('client.connected',    fun ?MODULE:on_client_connected/3, [Env]),
-    emqttd:hook('client.disconnected', fun ?MODULE:on_client_disconnected/3, [Env]).
+    emqx:hook('client.connected',    fun ?MODULE:on_client_connected/3, [Env]),
+    emqx:hook('client.disconnected', fun ?MODULE:on_client_disconnected/3, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id  = ClientId,
                                                    username   = Username,
@@ -37,33 +37,33 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id  = ClientId,
                                                    proto_ver  = ProtoVer}, Env) ->
     Payload = mochijson2:encode([{clientid, ClientId},
                                  {username, Username},
-                                 {ipaddress, iolist_to_binary(emqttd_net:ntoa(IpAddr))},
+                                 {ipaddress, iolist_to_binary(emqx_net:ntoa(IpAddr))},
                                  {clean_sess, CleanSess},
                                  {protocol, ProtoVer},
                                  {connack, ConnAck},
-                                 {ts, emqttd_time:now_secs()}]),
+                                 {ts, emqx_time:now_secs()}]),
     Msg = message(qos(Env), topic(connected, ClientId), Payload),
-    emqttd:publish(emqttd_message:set_flag(sys, Msg)),
+    emqx:publish(emqx_message:set_flag(sys, Msg)),
     {ok, Client}.
 
 on_client_disconnected(Reason, #mqtt_client{client_id = ClientId}, Env) ->
     Payload = mochijson2:encode([{clientid, ClientId},
                                  {reason, reason(Reason)},
-                                 {ts, emqttd_time:now_secs()}]),
+                                 {ts, emqx_time:now_secs()}]),
     Msg = message(qos(Env), topic(disconnected, ClientId), Payload),
-    emqttd:publish(emqttd_message:set_flag(sys, Msg)), ok.
+    emqx:publish(emqx_message:set_flag(sys, Msg)), ok.
 
 unload(_Env) ->
-    emqttd:unhook('client.connected',    fun ?MODULE:on_client_connected/3),
-    emqttd:unhook('client.disconnected', fun ?MODULE:on_client_disconnected/3).
+    emqx:unhook('client.connected',    fun ?MODULE:on_client_connected/3),
+    emqx:unhook('client.disconnected', fun ?MODULE:on_client_disconnected/3).
 
 message(Qos, Topic, Payload) ->
-    emqttd_message:make(presence, Qos, Topic, iolist_to_binary(Payload)).
+    emqx_message:make(presence, Qos, Topic, iolist_to_binary(Payload)).
 
 topic(connected, ClientId) ->
-    emqttd_topic:systop(list_to_binary(["clients/", ClientId, "/connected"]));
+    emqx_topic:systop(list_to_binary(["clients/", ClientId, "/connected"]));
 topic(disconnected, ClientId) ->
-    emqttd_topic:systop(list_to_binary(["clients/", ClientId, "/disconnected"])).
+    emqx_topic:systop(list_to_binary(["clients/", ClientId, "/disconnected"])).
 
 qos(Env) -> proplists:get_value(qos, Env, 0).
 

@@ -1,5 +1,5 @@
 .eunit
-deps
+deps/
 *.o
 *.beam
 *.plt
@@ -15,4 +15,6 @@ data/
 emqx_modules.d
 eunit.coverdata
 logs/
+.DS_Store
 test/ct.cover.spec
+test/*.beam

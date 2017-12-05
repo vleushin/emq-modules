@@ -46,8 +46,10 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id  = ClientId,
     emqx:publish(emqx_message:set_flag(sys, Msg)),
     {ok, Client}.
 
-on_client_disconnected(Reason, #mqtt_client{client_id = ClientId}, Env) ->
+on_client_disconnected(Reason, #mqtt_client{client_id = ClientId,
+                                            username = Username}, Env) ->
     Payload = mochijson2:encode([{clientid, ClientId},
+                                 {username, Username},
                                  {reason, reason(Reason)},
                                  {ts, emqx_time:now_secs()}]),
     Msg = message(qos(Env), topic(disconnected, ClientId), Payload),

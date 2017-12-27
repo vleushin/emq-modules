@@ -1,6 +1,6 @@
 PROJECT = emqx_modules
 PROJECT_DESCRIPTION = EMQ X Modules
-PROJECT_VERSION = 2.3.2
+PROJECT_VERSION = 2.4
 
 BUILD_DEPS = emqx cuttlefish
 dep_emqx = git git@github.com:emqx/emqx-enterprise

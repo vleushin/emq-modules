@@ -10,6 +10,9 @@ dep_gpb = git https://github.com/vleushin/gpb 3.26.6-vsn
 BUILD_DEPS = emqttd cuttlefish
 dep_emqttd = git https://github.com/emqtt/emqttd master
 dep_cuttlefish = git https://github.com/emqtt/cuttlefish
+dep_supervisor3 = git https://github.com/klarna/supervisor3 1.1.5
+dep_kafka_protocol = git https://github.com/klarna/kafka_protocol 1.1.1
+dep_snappyer = git https://github.com/zmstone/snappyer master
 
 NO_AUTOPATCH = cuttlefish
 

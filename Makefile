@@ -2,6 +2,11 @@ PROJECT = emq_modules
 PROJECT_DESCRIPTION = EMQ Modules
 PROJECT_VERSION = 2.3.3
 
+DEPS = ecpool brod gpb supervisor3 kafka_protocol snappyer
+dep_ecpool = git https://github.com/emqtt/ecpool master
+dep_brod = git https://github.com/klarna/brod 3.3.4
+dep_gpb = git https://github.com/vleushin/gpb 3.26.6-vsn
+
 BUILD_DEPS = emqttd cuttlefish
 dep_emqttd = git https://github.com/emqtt/emqttd master
 dep_cuttlefish = git https://github.com/emqtt/cuttlefish
